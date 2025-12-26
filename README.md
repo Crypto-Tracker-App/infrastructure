@@ -7,6 +7,7 @@ This repository contains base manifests and environment overlays. It includes Na
 - `prod`
 - `test`
 - `dev`
+- `logging`
 
 Apply the namespaces directly:
 

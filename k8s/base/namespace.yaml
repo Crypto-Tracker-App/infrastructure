@@ -18,4 +18,10 @@ metadata:
   name: dev
   labels:
     environment: dev
-
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging
+  labels:
+    environment: logging
