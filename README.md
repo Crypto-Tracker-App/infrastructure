@@ -4,7 +4,7 @@ This document explains how to create and expose endpoints through the Nginx Ingr
 
 ## Overview
 
-Services are exposed through two Nginx Ingress resources at `http://<INGRESS_IP>/`:
+Services are exposed through two Nginx Ingress resources at `http://20.251.246.218/`:
 
 1. **frontend-ingress** - Serves the frontend application (no path rewriting)
 2. **api-ingress** - Routes API requests to backend services (with path rewriting)
