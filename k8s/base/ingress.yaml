@@ -43,3 +43,17 @@ spec:
             name: user-service
             port:
               number: 5000
+      - path: /portfolio-service/api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portfolio-service
+            port:
+              number: 5000
+      - path: /alert-service/api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: alert-service
+            port:
+              number: 5000
