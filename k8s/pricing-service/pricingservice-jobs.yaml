@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pricing-service-db-setup
+  labels:
+    app: pricing-service
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: pricing-service
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: db-setup
+          image: cryptotracker.azurecr.io/pricing-service:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: pricing-service-config
+            - secretRef:
+                name: pricing-service-secrets
+          command: ["sh", "-c", "alembic upgrade head && flask seed"]
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pricing-service-update-marketdata
+  labels:
+    app: pricing-service
+spec:
+  schedule: "0 * * * *"  # hourly UTC
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        metadata:
+          labels:
+            app: pricing-service
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: update-market-data
+              image: cryptotracker.azurecr.io/pricing-service:latest
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: pricing-service-config
+                - secretRef:
+                    name: pricing-service-secrets
+              command: ["sh", "-c", "sleep 10 && flask update-market-data"]
