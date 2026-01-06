@@ -3,6 +3,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Kubernetes secrets - NEVER commit secrets to git
+k8s/**/pricingservice-secret*.yaml
+k8s/**/*-secret*.yaml
+
 # C extensions
 *.so
 
