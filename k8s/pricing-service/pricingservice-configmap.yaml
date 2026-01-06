@@ -13,3 +13,4 @@ data:
   ENVIRONMENT: development
   EXTERNAL_LOG_LEVEL: WARNING
   LOG_REQUEST_COMPLETION: errors
+  ALERT_SERVICE_URL: http://alert-service:5000
