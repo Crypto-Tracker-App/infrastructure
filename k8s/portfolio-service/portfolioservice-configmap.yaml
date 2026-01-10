@@ -6,6 +6,7 @@ metadata:
 data:
   FLASK_ENV: "production"
   FRONTEND_URL: "http://localhost:3000"
+  AUTH_SERVICE_URL: "http://user-service:5000"
   DB_HOST: "portfolio-service-db"
   DB_PORT: "5432"
   POSTGRES_PORT: "5432"

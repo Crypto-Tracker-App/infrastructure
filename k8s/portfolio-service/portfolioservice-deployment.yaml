@@ -56,6 +56,11 @@ spec:
             configMapKeyRef:
               name: portfolioservice-config
               key: FRONTEND_URL
+        - name: AUTH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: portfolioservice-config
+              key: AUTH_SERVICE_URL
         - name: DB_HOST
           valueFrom:
             configMapKeyRef:
