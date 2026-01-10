@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alert-service-db-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-service-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-service-db
+  template:
+    metadata:
+      labels:
+        app: alert-service-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: alertservice-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: alertservice-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: alertservice-config
+                  key: POSTGRES_DB
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "48Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "150m"
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: alert-service-db-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-service-db
+spec:
+  type: ClusterIP
+  selector:
+    app: alert-service-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
