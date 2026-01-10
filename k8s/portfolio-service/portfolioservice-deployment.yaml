@@ -98,8 +98,8 @@ spec:
               key: SECRET_KEY
         resources:
           requests:
-            memory: "96Mi"
-            cpu: "100m"
+            memory: "48Mi"
+            cpu: "50m"
           limits:
-            memory: "256Mi"
-            cpu: "300m"
+            memory: "128Mi"
+            cpu: "150m"
