@@ -11,7 +11,7 @@ data:
     // Runtime configuration for Crypto Tracker Frontend
     // This file is mounted into the nginx container at /usr/share/nginx/html/config.js
     window.__APP_CONFIG__ = {
-      API_BASE_URL: 'http://20.251.246.218',
+      API_BASE_URL: 'crypto-tracker.norwayeast.cloudapp.azure.com',
       VAPID_PUBLIC_KEY: 'your_public_key_here',
       // Add more configuration values as needed
       // Example:
