@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: frontend-ingress
   namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/try-files: $uri $uri/ /index.html
 spec:
   ingressClassName: nginx
   rules:

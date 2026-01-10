@@ -96,6 +96,18 @@ spec:
             secretKeyRef:
               name: userservice-secret
               key: SECRET_KEY
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
         resources:
           requests:
             memory: "64Mi"
