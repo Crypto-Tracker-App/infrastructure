@@ -1,0 +1,56 @@
+name: CI/CD for Alert Service
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'k8s/alert-service/**'
+      - 'k8s/overlays/prod/alert-service/**'
+      - '.github/workflows/deploy-alert-service.yml'
+
+env:
+  ACR: cryptotracker.azurecr.io
+
+jobs:
+  deploy-to-aks:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v3
+        with:
+          cluster-name: ${{ vars.AKS_NAME }}
+          resource-group: ${{ vars.AKS_RG }}
+
+      - name: Create image pull secret (if needed)
+        run: |
+          kubectl create secret docker-registry acr-creds \
+            --docker-server=${{ env.ACR }} \
+            --docker-username=${{ secrets.ACR_USERNAME }} \
+            --docker-password=${{ secrets.ACR_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Deploy with Kustomize
+        run: |
+          kustomize build k8s/overlays/prod/alert-service | kubectl apply -f -
+
+      - name: Rollout status
+        run: |
+          kubectl rollout status deployment/alert-service --timeout=180s
+          kubectl get pods -l app=alert-service
+          kubectl get services alert-service
