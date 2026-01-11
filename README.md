@@ -79,9 +79,9 @@ k8s/
 
 
 #### `base/ingress.yaml`
-Implements NGINX Ingress controller for external traffic routing:
+Implements NGINX Ingress controller for external traffic routing, that redirects HTTP traffic to HTTPS:
 
-1. **Frontend Ingress**: Routes HTTP requests to `/` path to the frontend service
+1. **Frontend Ingress**: Routes HTTPS requests to `/` path to the frontend service
    - Uses try-files rewrite rule to support SPA (Single Page Application) routing
    - Serves static content on port 80
 
