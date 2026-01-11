@@ -4,11 +4,19 @@ metadata:
   name: frontend-ingress
   namespace: default
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/try-files: $uri $uri/ /index.html
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - crypto-tracker.norwayeast.cloudapp.azure.com
+    secretName: crypto-tracker-tls
   rules:
-  - http:
+  - host: crypto-tracker.norwayeast.cloudapp.azure.com
+    http:
       paths:
       - path: /
         pathType: Prefix
@@ -29,7 +37,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: crypto-tracker.norwayeast.cloudapp.azure.com
+    http:
       paths:
       - path: /pricing-service/api(/|$)(.*)
         pathType: ImplementationSpecific
