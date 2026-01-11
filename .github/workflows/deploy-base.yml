@@ -1,0 +1,42 @@
+name: CI/CD for Base
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'k8s/base/**'
+      - 'k8s/overlays/prod/base/**'
+      - '.github/workflows/deploy-base.yml'
+
+env:
+  ACR: cryptotracker.azurecr.io
+
+jobs:
+  deploy-to-aks:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v3
+        with:
+          cluster-name: ${{ vars.AKS_NAME }}
+          resource-group: ${{ vars.AKS_RG }}
+
+      - name: Install Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Deploy with Kustomize
+        run: |
+          kustomize build k8s/overlays/prod/base | kubectl apply -f -
